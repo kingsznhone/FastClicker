@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace mouse_click
 {
+    [SupportedOSPlatform("windows")]
     class AppHotKey
     {
         [DllImport("kernel32.dll")]
@@ -55,7 +57,6 @@ namespace mouse_click
  
         public static void UnRegKey(IntPtr hwnd, int hotKey_id)
         {
- 
             UnregisterHotKey(hwnd, hotKey_id);
         }
     }

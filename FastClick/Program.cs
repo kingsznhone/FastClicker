@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Runtime.Versioning;
 using System.Windows.Forms;
 
 namespace mouse_click
 {
+    [SupportedOSPlatform("windows")]
     static class Program
     {
         /// <summary>
@@ -14,6 +13,7 @@ namespace mouse_click
         [STAThread]
         static void Main()
         {
+            Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());

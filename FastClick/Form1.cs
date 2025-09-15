@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,13 +13,14 @@ using System.Windows.Forms;
 
 namespace mouse_click
 {
+    [SupportedOSPlatform("windows")]
     public partial class Form1 : Form
     {
-        private const int WM_HOTKEY = 0x312; 
-        private const int WM_CREATE = 0x1;   
-        private const int WM_DESTROY = 0x2;  
-        private const int Space = 0x3572; 
-        bool isenable = false;
+        private const int WM_HOTKEY = 0x312;
+        private const int WM_CREATE = 0x1;
+        private const int WM_DESTROY = 0x2;
+        private const int Space = 0x3572;
+        bool Enable = false;
         [DllImport("user32.dll", EntryPoint = "mouse_event")]
         public static extern void mouse_event(
             int dwFlags,
@@ -31,42 +33,41 @@ namespace mouse_click
         public static extern void keybd_event(
            byte bVk,
            byte bScan,
-           int dwFlags,  
-           int dwExtraInfo  
+           int dwFlags,
+           int dwExtraInfo
        );
         [DllImport("user32.dll")]
         public static extern bool GetCursorPos(out Point p);
         Point p;
-        const int MOUSEEVENTF_MOVE = 0x0001;      
-        const int MOUSEEVENTF_LEFTDOWN = 0x0002;  
-        const int MOUSEEVENTF_LEFTUP = 0x0004; 
-        const int MOUSEEVENTF_RIGHTDOWN = 0x0008;  
-        const int MOUSEEVENTF_RIGHTUP = 0x0010; 
-        const int MOUSEEVENTF_ABSOLUTE = 0x8000; 
+        const int MOUSEEVENTF_MOVE = 0x0001;
+        const int MOUSEEVENTF_LEFTDOWN = 0x0002;
+        const int MOUSEEVENTF_LEFTUP = 0x0004;
+        const int MOUSEEVENTF_RIGHTDOWN = 0x0008;
+        const int MOUSEEVENTF_RIGHTUP = 0x0010;
+        const int MOUSEEVENTF_ABSOLUTE = 0x8000;
 
         public Form1()
         {
             InitializeComponent();
         }
 
-        private void Form1_KeyDown(object sender, KeyEventArgs e)
+        private async void timer1_Tick(object sender, EventArgs e)
         {
-            
-        }
-
-        private void timer1_Tick(object sender, EventArgs e)
-        {
-            GetCursorPos(out p);
-            label1.Text = p.X.ToString();
-            label2.Text = p.Y.ToString();
-            int dx = Convert.ToInt32(p.X);
-            int dy = Convert.ToInt32(p.Y);
-            mouse_event(MOUSEEVENTF_LEFTDOWN, dx, dy, 0, 0);
-            keybd_event((byte)Keys.D1, 0, 0, 0);
-            Thread.Sleep(10);
-            mouse_event(MOUSEEVENTF_LEFTUP, dx, dy, 0, 0);
-            keybd_event((byte)Keys.D1, 0, 2, 0);
-
+            keybd_event((byte)Keys.Down, 0, 0, 0);
+            await Task.Delay(14);
+            keybd_event((byte)Keys.Up, 0, 0, 0);
+            await Task.Delay(14);
+            keybd_event((byte)Keys.Left, 0, 0, 0);
+            await Task.Delay(14);
+            keybd_event((byte)Keys.Right, 0, 0, 0);
+            await Task.Delay(14);
+            keybd_event((byte)Keys.Up, 0, 2, 0);
+            await Task.Delay(14);
+            keybd_event((byte)Keys.Down, 0, 2, 0);
+            await Task.Delay(14);
+            keybd_event((byte)Keys.Left, 0, 2, 0);
+            await Task.Delay(14);
+            keybd_event((byte)Keys.Right, 0, 2, 0);
         }
 
         protected override void WndProc(ref Message m)
@@ -74,30 +75,29 @@ namespace mouse_click
             base.WndProc(ref m);
             switch (m.Msg)
             {
-                case WM_HOTKEY:  
+                case WM_HOTKEY:
                     switch (m.WParam.ToInt32())
                     {
                         case Space:
-                            if (isenable)
+                            timer1.Enabled = !timer1.Enabled;
+                            if (timer1.Enabled)
                             {
-                                timer1.Enabled = false;
-                                isenable = false;
+                                pictureBox1.Image = Properties.Resources.on;
                             }
                             else
                             {
-                                timer1.Enabled = true;
-                                isenable = true;
+                                pictureBox1.Image = Properties.Resources.off;
                             }
                             break;
                         default:
                             break;
                     }
                     break;
-                case WM_CREATE: 
+                case WM_CREATE:
                     AppHotKey.RegKey(Handle, Space, AppHotKey.KeyModifiers.Ctrl | AppHotKey.KeyModifiers.Shift, Keys.D);
                     break;
-                case WM_DESTROY: 
-                    AppHotKey.UnRegKey(Handle, Space);   
+                case WM_DESTROY:
+                    AppHotKey.UnRegKey(Handle, Space);
                     break;
                 default:
                     break;
@@ -106,6 +106,7 @@ namespace mouse_click
 
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
+            AppHotKey.UnRegKey(Handle, Space);
             Environment.Exit(0);
         }
     }
