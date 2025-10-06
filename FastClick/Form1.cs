@@ -54,19 +54,19 @@ namespace mouse_click
         private async void timer1_Tick(object sender, EventArgs e)
         {
             keybd_event((byte)Keys.Down, 0, 0, 0);
-            await Task.Delay(14);
+            await Task.Delay(25);
             keybd_event((byte)Keys.Up, 0, 0, 0);
-            await Task.Delay(14);
+            await Task.Delay(25);
             keybd_event((byte)Keys.Left, 0, 0, 0);
-            await Task.Delay(14);
+            await Task.Delay(25);
             keybd_event((byte)Keys.Right, 0, 0, 0);
-            await Task.Delay(14);
+            await Task.Delay(25);
             keybd_event((byte)Keys.Up, 0, 2, 0);
-            await Task.Delay(14);
+            await Task.Delay(25);
             keybd_event((byte)Keys.Down, 0, 2, 0);
-            await Task.Delay(14);
+            await Task.Delay(25);
             keybd_event((byte)Keys.Left, 0, 2, 0);
-            await Task.Delay(14);
+            await Task.Delay(25);
             keybd_event((byte)Keys.Right, 0, 2, 0);
         }
 
